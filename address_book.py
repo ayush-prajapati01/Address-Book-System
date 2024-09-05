@@ -97,6 +97,14 @@ class AddressBook:
     
 
     def update_contacts(self, name):
+        """
+        Description:
+            Update contacts by their name
+        Parameters:
+            name: Name of the person whose contact to be updated
+        Returns:
+            None
+        """
         first_name, last_name = name.split()
         for contact in self.contacts:
             if contact.first_name == first_name and contact.last_name == last_name:
@@ -149,6 +157,26 @@ class AddressBook:
                 self.logger.info("No contacts found.")
 
 
+    def delete_contacts(self, name):
+        """
+        Description:
+            Delete contact by their name
+        Parameters:
+            name: Name of the person whose contact to be deleted
+        Returns:
+            None
+        """
+        first_name, last_name = name.split()
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                self.logger.info("Deleting Contact...")
+                self.contacts.remove(contact)
+                self.logger.info("\nSuccessfully Deleted Contact...")
+                break
+            else:
+                self.logger.info("Contact NOT found.")
+
+
 def get_valid_input(logger, prompt, validation_func):
     """
     Description:
@@ -179,7 +207,8 @@ def main():
         print("1. Add Contact")
         print("2. Display Contacts")
         print("3. Update Contact by name")
-        print("4. Exit")
+        print("4. Delete Contact by name")
+        print("5. Exit")
         choice = input("Choose an option: ")
 
         match choice:
@@ -202,8 +231,12 @@ def main():
             case "3":
                 name = input("Enter the first and last name seperated by space(ex:joe lee): ")
                 address_book.update_contacts(name)
-
+            
             case "4":
+                name = input("Enter the first and last name seperated by space(ex:joe lee): ")
+                address_book.delete_contacts(name)
+
+            case "5":
                 logger.info("Exiting the Address Book System. \nThank you for using the system!")
                 break
 
