@@ -14,7 +14,7 @@ from input_validator import is_valid, is_valid_email, is_valid_phone_number, is_
 
 
 class Contact:
-    def __init__(self, first_name, last_name, address, state, zip_code, phone_number, email):
+    def __init__(self, first_name, last_name, address, city, state, zip_code, phone_number, email):
         """
         Description:
             This function initializes a new object with the user's information. 
@@ -22,6 +22,7 @@ class Contact:
             first_name (str): The user's first name.
             last_name (str): The user's last name.
             address (str): The user's residential address.
+            city (str): The user's city of residence.
             state (str): The user's state of residence.
             zip_code (int): The user's postal zip code.
             phone_number (int): The user's phone number.
@@ -32,6 +33,7 @@ class Contact:
         self.first_name = first_name
         self.last_name = last_name
         self.address = address
+        self.city = city
         self.state = state
         self.zip_code = zip_code
         self.phone_number = phone_number
@@ -42,6 +44,7 @@ class Contact:
         return (f"\nFirst Name: {self.first_name}\n"
                 f"Last Name: {self.last_name}\n"
                 f"Address: {self.address}\n"
+                f"City: {self.city}\n"
                 f"State: {self.state}\n"
                 f"ZIP Code: {self.zip_code}\n"
                 f"Phone Number: {self.phone_number}\n"
@@ -91,6 +94,78 @@ class AddressBook:
             for contact in self.contacts:
                 self.logger.info(contact)
                 self.logger.info("\n" + "-" * 40)
+    
+
+    def update_contacts(self, name):
+        first_name, last_name = name.split()
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                self.logger.info("Updating Contact...")
+                while True:
+                    print("\nWhich field would you like to update?")
+                    print("1. First Name")
+                    print("2. Last Name")
+                    print("3. Address")
+                    print("4. City")
+                    print("5. State")
+                    print("6. ZIP Code")
+                    print("7. Phone Number")
+                    print("8. Email")
+                    print("9. Back to Main Menu")
+
+                    choice = input("Enter your choice (1-8): ")
+
+                    if choice == "1":
+                        print(f"Old First Name: {contact.first_name}")
+                        contact.first_name = get_valid_input(self.logger, "Enter new first name: ", is_valid)
+                    elif choice == "2":
+                        print(f"Old Last Name: {contact.last_name}")
+                        contact.last_name = get_valid_input(self.logger, "Enter new last name: ", is_valid)
+                    elif choice == "3":
+                        print(f"Old Address: {contact.address}")
+                        contact.address = get_valid_input(self.logger, "Enter new address: ", is_valid)
+                    elif choice == "4":
+                        print(f"Old City: {contact.city}")
+                        contact.city= get_valid_input(self.logger, "Enter new city: ", is_valid)
+                    elif choice == "5":
+                        print(f"Old state: {contact.state}")
+                        contact.state = get_valid_input(self.logger, "Enter new state: ", is_valid)
+                    elif choice == "6":
+                        print(f"Old Zip code: {contact.zip_code}")
+                        contact.zip_code = get_valid_input(self.logger, "Enter new ZIP code: ", is_valid_zip)
+                    elif choice == "7":
+                        print(f"Old Phone number: {contact.phone_number}")
+                        contact.phone_number = get_valid_input(self.logger, "Enter new phone number: ", is_valid_phone_number)
+                    elif choice == "8":
+                        print(f"Old Email: {contact.email}")
+                        contact.email = get_valid_input(self.logger, "Enter new email: ", is_valid_email)
+                    elif choice == "9":
+                        self.logger.info("Update process completed.")
+                        return
+                    else:
+                        self.logger.info("Invalid choice, please try again.")
+
+            else:
+                self.logger.info("No contacts found.")
+
+
+def get_valid_input(logger, prompt, validation_func):
+    """
+    Description:
+        Gets the valid user input
+    Parameters:
+        logger: logger object
+        prompt: prompt for the user
+        validation_func: validation func to be used
+    Returns:
+        user_input: validated user input
+    """
+    while True:
+        user_input = input(prompt)
+        if validation_func(user_input):
+            return user_input
+        else:
+            logger.info(f"The input '{user_input}' is invalid. Please try again.")
 
 
 def main():
@@ -103,74 +178,32 @@ def main():
         print("\nOptions:")
         print("1. Add Contact")
         print("2. Display Contacts")
-        print("3. Exit")
+        print("3. Update Contact by name")
+        print("4. Exit")
         choice = input("Choose an option: ")
 
         match choice:
             case "1":
-                while True:
-                    first_name = input("\nEnter the First name: ")
-                    if is_valid(first_name):
-                        break
-                    else:
-                        logger.info(f"\nThe first name '{first_name}' is Invalid. Please try again.")
+                first_name = get_valid_input(logger,"\nEnter the First name: ", is_valid)
+                last_name = get_valid_input(logger,"Enter the Last name: ", is_valid)
+                address = get_valid_input(logger,"Enter the Address: ", is_valid)
+                city = get_valid_input(logger,"Enter the City: ", is_valid)
+                state = get_valid_input(logger,"Enter the State: ", is_valid)
+                zip_code = get_valid_input(logger,"Enter your ZIP code: ", is_valid_zip)
+                phone_number = get_valid_input(logger,"Enter your Phone Number: ", is_valid_phone_number)
+                email = get_valid_input(logger,"Enter your email: ", is_valid_email)
 
-                while True:
-                    last_name = input("Enter the Last name: ")
-                    if is_valid(last_name):
-                        break
-                    else:
-                        logger.info(f"\nThe Last name '{last_name}' is Invalid. Please try again.")
-
-                while True:
-                    address = input("Enter the Address: ")
-                    if is_valid(address):
-                        break
-                    else:
-                        logger.info(f"\nThe address '{address}' is Invalid. Please try again.")
-
-                while True:
-                    city = input("Enter the City: ")
-                    if is_valid(city):
-                        break
-                    else:
-                        logger.info(f"\nThe city '{city}' is Invalid. Please try again.")
-
-                while True:
-                    state = input("Enter the State: ")
-                    if is_valid(state):
-                        break
-                    else:
-                        logger.info(f"\nThe state '{state}' is Invalid. Please try again.")                          
-
-                while True:
-                    zip_code = input("Enter your ZIP code: ")
-                    if is_valid_zip(zip_code):
-                        break
-                    else:
-                        logger.info(f"\nThe zip '{zip_code}' is Invalid. Please enter a numeric 6 digit ZIP code.")
-
-                while True:
-                    phone_number = input("Enter your Phone Number: ")
-                    if is_valid_phone_number(phone_number):
-                        break
-                    else:
-                        logger.info(f"The Phone number '{phone_number}' is Invalid. Please enter a numeric phone number.")
-
-                while True:
-                    email = input("Enter your email: ")
-                    if is_valid_email(email):
-                        break
-                    else:
-                        logger.info(f"The Email '{email}' is Invalid. Please enter a valid email.")
-                
-                new_contact = Contact(first_name, last_name, address, state, zip_code, phone_number, email)
+                new_contact = Contact(first_name, last_name, address, city, state, zip_code, phone_number, email)
                 address_book.add_contact(new_contact)
 
             case "2":
                 address_book.display_contacts()
-
+            
             case "3":
+                name = input("Enter the first and last name seperated by space(ex:joe lee): ")
+                address_book.update_contacts(name)
+
+            case "4":
                 logger.info("Exiting the Address Book System. \nThank you for using the system!")
                 break
 
