@@ -75,6 +75,12 @@ class AddressBook:
         Returns:
             None
         """
+        for existing_contact in self.contacts:
+            if existing_contact.first_name == contact.first_name and \
+                existing_contact.last_name == contact.last_name:
+                self.logger.info(f"Contact with the name {contact.first_name} {contact.last_name} already exists!")
+                return
+
         self.contacts.append(contact)
         self.logger.info("Contact added successfully!")
 
