@@ -196,6 +196,29 @@ def get_valid_input(logger, prompt, validation_func):
             logger.info(f"The input '{user_input}' is invalid. Please try again.")
 
 
+def create_contact(logger):
+    """
+    Description:
+        Takes the user input and creates a contact
+    Parameters:
+        logger: logger object
+    Returns:
+        object: contact object
+    """
+    first_name = get_valid_input(logger,"\nEnter the First name: ", is_valid)
+    last_name = get_valid_input(logger,"Enter the Last name: ", is_valid)
+    address = get_valid_input(logger,"Enter the Address: ", is_valid)
+    city = get_valid_input(logger,"Enter the City: ", is_valid)
+    state = get_valid_input(logger,"Enter the State: ", is_valid)
+    zip_code = get_valid_input(logger,"Enter your ZIP code: ", is_valid_zip)
+    phone_number = get_valid_input(logger,"Enter your Phone Number: ", is_valid_phone_number)
+    email = get_valid_input(logger,"Enter your email: ", is_valid_email)
+
+    new_contact = Contact(first_name, last_name, address, city, state, zip_code, phone_number, email)
+
+    return new_contact
+
+
 def main():
     print("**** Welcome to Address Book System ****")
 
@@ -208,21 +231,13 @@ def main():
         print("2. Display Contacts")
         print("3. Update Contact by name")
         print("4. Delete Contact by name")
-        print("5. Exit")
+        print("5. Add Multiple Contacts")
+        print("6. Exit")
         choice = input("Choose an option: ")
 
         match choice:
             case "1":
-                first_name = get_valid_input(logger,"\nEnter the First name: ", is_valid)
-                last_name = get_valid_input(logger,"Enter the Last name: ", is_valid)
-                address = get_valid_input(logger,"Enter the Address: ", is_valid)
-                city = get_valid_input(logger,"Enter the City: ", is_valid)
-                state = get_valid_input(logger,"Enter the State: ", is_valid)
-                zip_code = get_valid_input(logger,"Enter your ZIP code: ", is_valid_zip)
-                phone_number = get_valid_input(logger,"Enter your Phone Number: ", is_valid_phone_number)
-                email = get_valid_input(logger,"Enter your email: ", is_valid_email)
-
-                new_contact = Contact(first_name, last_name, address, city, state, zip_code, phone_number, email)
+                new_contact = create_contact(logger)
                 address_book.add_contact(new_contact)
 
             case "2":
@@ -235,8 +250,20 @@ def main():
             case "4":
                 name = input("Enter the first and last name seperated by space(ex:joe lee): ")
                 address_book.delete_contacts(name)
-
+            
             case "5":
+                while True:
+                    try:
+                        no_of_contacts = int(input("Enter number of contacts to be added: "))
+                        for count in range(no_of_contacts):
+                            logger.info(f"\nPlease enter contact {count+1}")
+                            new_contact = create_contact(logger)
+                            address_book.add_contact(new_contact)
+                        break
+                    except:
+                        logger.info("Please enter a Valid number")
+
+            case "6":
                 logger.info("Exiting the Address Book System. \nThank you for using the system!")
                 break
 
