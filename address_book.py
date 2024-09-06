@@ -3,7 +3,7 @@
 @Author: Ayush Prajapati
 @Date: 04-09-2024
 @Last Modified by: Ayush Prajapati
-@Last Modified time: 04-09-2024
+@Last Modified time: 06-09-2024
 @Title: Address Book System Using Python
 
 '''
@@ -52,7 +52,7 @@ class Contact:
 
 
 class AddressBook:
-    def __init__(self, logger):
+    def __init__(self, logger, name):
         """
         Description:
             Initializes a new address book with an empty list of contacts.
@@ -61,6 +61,7 @@ class AddressBook:
         Returns:
             None
         """
+        self.name = name
         self.contacts = []
         self.logger = logger
 
@@ -177,6 +178,85 @@ class AddressBook:
                 self.logger.info("Contact NOT found.")
 
 
+class ManageAddressBook:
+    def __init__(self, logger):
+        """
+        Description:
+            Initializes the to manage multiple address books.
+        Parameters:
+            None
+        Return:
+            None
+        """
+        self.address_books = {}
+        self.logger = logger
+
+
+    def create_address_book(self, name):
+        """
+        Description:
+            Creates a new address book with a unique name.
+        Parameters:
+            None
+        Return:
+            None
+        """
+        if name in self.address_books:
+            self.logger.info(f"Address book '{name}' already exists.")
+        else:
+            self.address_books[name] = AddressBook(self.logger, name)
+            self.logger.info(f"Address book '{name}' created successfully.")
+
+
+    def delete_address_book(self, name):
+        """
+        Description:
+            Deletes an address book by its unique name.
+        Parameters:
+            name: name of the address book
+        Return:
+            None
+        """
+        if name in self.address_books:
+            del self.address_books[name]
+            self.logger.info(f"Address book '{name}' deleted successfully.")
+        else:
+            self.logger.info(f"Address book '{name}' not found.")
+
+
+    def select_address_book(self, name):
+        """
+        Description:
+        Selects an address book by its unique name.
+        Parameters:
+            name: name of the address book
+        Return:
+            None
+        """
+        if name in self.address_books:
+            return self.address_books[name]
+        else:
+            self.logger.info(f"Address book '{name}' not found.")
+            return None
+        
+
+    def list_address_books(self):
+        """
+        Description:
+            Lists all available address books.
+        Parameters:
+            name: name of the address book
+        Return:
+            None
+        """
+        if not self.address_books:
+            self.logger.info("No address books available.")
+        else:
+            self.logger.info("Available Address Books:")
+            for name in self.address_books:
+                self.logger.info(f"- {name}")
+
+
 def get_valid_input(logger, prompt, validation_func):
     """
     Description:
@@ -223,52 +303,93 @@ def main():
     print("**** Welcome to Address Book System ****")
 
     logger = create_logger("address-book")
-    address_book = AddressBook(logger)
-    
+    address_book_manager = ManageAddressBook(logger)
+
+    # Main AddressBook menu
     while True:
         print("\nOptions:")
-        print("1. Add Contact")
-        print("2. Display Contacts")
-        print("3. Update Contact by name")
-        print("4. Delete Contact by name")
-        print("5. Add Multiple Contacts")
-        print("6. Exit")
+        print("1. Add Address Book")
+        print("2. Display All Address Books")
+        print("3. Delete Address Book")
+        print("4. Go to Contacts Menu")
+        print("5. Exit")
+        
         choice = input("Choose an option: ")
 
         match choice:
             case "1":
-                new_contact = create_contact(logger)
-                address_book.add_contact(new_contact)
-
+                address_book_name = get_valid_input(logger,"\nEnter name of the address book: ", is_valid)
+                address_book_manager.create_address_book(address_book_name)
+            
             case "2":
-                address_book.display_contacts()
+                address_book_manager.list_address_books()
             
             case "3":
-                name = input("Enter the first and last name seperated by space(ex:joe lee): ")
-                address_book.update_contacts(name)
+                address_book_name = input("Enter name of the address book to delete: ")
+                address_book_manager.delete_address_book(address_book_name)
             
             case "4":
-                name = input("Enter the first and last name seperated by space(ex:joe lee): ")
-                address_book.delete_contacts(name)
+                print(f"Available Address Books:")
+                address_book_manager.list_address_books()
+                address_book_name = input("Enter name of the address book to manage contacts: ")
+                address_book = address_book_manager.select_address_book(address_book_name)
+                if address_book:
+                    print(f"Managing contacts for Address Book: {address_book_name}")
+                    
+                    # Contacts menu
+                    while True:
+                        print("\nOptions:")
+                        print("1. Add Contact")
+                        print("2. Display Contacts")
+                        print("3. Update Contact by name")
+                        print("4. Delete Contact by name")
+                        print("5. Add Multiple Contacts")
+                        print("6. Go Back to Main Menu")
+                        contact_choice = input("Choose an option: ")
+
+                        match contact_choice:
+                            case "1":
+                                new_contact = create_contact(logger)
+                                address_book.add_contact(new_contact)
+
+                            case "2":
+                                address_book.display_contacts()
+
+                            case "3":
+                                name = input("Enter the first and last name separated by space (ex: joe lee): ")
+                                address_book.update_contacts(name)
+
+                            case "4":
+                                name = input("Enter the first and last name separated by space (ex: joe lee): ")
+                                address_book.delete_contacts(name)
+
+                            case "5":
+                                while True:
+                                    try:
+                                        no_of_contacts = int(input("Enter number of contacts to be added: "))
+                                        for count in range(no_of_contacts):
+                                            logger.info(f"\nPlease enter contact {count+1}")
+                                            new_contact = create_contact(logger)
+                                            address_book.add_contact(new_contact)
+                                        break
+                                    except ValueError:
+                                        logger.info("Please enter a valid number.")
+
+                            case "6":
+                                logger.info("Switching to the Main menu.")
+                                break
+
+                            case _:
+                                logger.info("Invalid option! Please choose again.")
+                else:
+                    print(f"Address Book '{address_book_name}' not found.")
             
             case "5":
-                while True:
-                    try:
-                        no_of_contacts = int(input("Enter number of contacts to be added: "))
-                        for count in range(no_of_contacts):
-                            logger.info(f"\nPlease enter contact {count+1}")
-                            new_contact = create_contact(logger)
-                            address_book.add_contact(new_contact)
-                        break
-                    except:
-                        logger.info("Please enter a Valid number")
-
-            case "6":
-                logger.info("Exiting the Address Book System. \nThank you for using the system!")
+                print("Exiting the Address Book System.\nThank You for using our system")
                 break
 
             case _:
-                logger.info("Invalid option! Please choose again.")
+                print("Invalid choice. Please choose a valid option.")
 
 
 if __name__ == "__main__":
