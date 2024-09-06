@@ -184,6 +184,39 @@ class AddressBook:
                 self.logger.info("Contact NOT found.")
 
 
+    def search_via_name(self, name):
+        """
+        Description:
+            Searhes and display contact of a person
+        Parameters:
+            name(str): The name to be searched
+        Returns:
+            str: contact of a person
+        """
+        first_name, last_name = name.split()
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                self.logger.info(contact)
+                return
+            
+
+    def search_via_state(self, state):
+        """
+        Description:
+            Searches all the person belonging to a state
+        Parameters:
+            state(str): The state to be searched
+        Returns:
+            None
+        """
+        person_in_state = []
+        for contact in self.contacts:
+            if contact.state == state :
+                person_in_state.append(contact.first_name + " " + contact.last_name)
+        
+        return person_in_state
+
+
 class ManageAddressBook:
     def __init__(self, logger):
         """
@@ -350,7 +383,9 @@ def main():
                         print("3. Update Contact by name")
                         print("4. Delete Contact by name")
                         print("5. Add Multiple Contacts")
-                        print("6. Go Back to Main Menu")
+                        print("6. Search via Name")
+                        print("7. Search via State")
+                        print("8. Go Back to Main Menu")
                         contact_choice = input("Choose an option: ")
 
                         match contact_choice:
@@ -382,6 +417,18 @@ def main():
                                         logger.info("Please enter a valid number.")
 
                             case "6":
+                                name = input("Enter the first and last name separated by space (ex: joe lee): ")
+                                address_book.search_via_name(name)
+
+                            case "7":
+                                state_name = get_valid_input(logger,"\nEnter name of state to search: ", is_valid)
+                                person_in_state = []
+                                person_in_state = address_book.search_via_state(state_name)
+                                logger.info(f"Person in State {state_name} is/are:")
+                                for person in person_in_state:
+                                    logger.info(person)
+
+                            case "8":
                                 logger.info("Switching to the Main menu.")
                                 break
 
