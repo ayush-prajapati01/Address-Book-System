@@ -12,6 +12,7 @@
 from logging_helper import create_logger
 from input_validator import is_valid, is_valid_email, is_valid_phone_number, is_valid_zip
 import csv
+import json
 
 
 class Contact:
@@ -311,7 +312,8 @@ class AddressBook:
 
     def write_to_text_file(self, file_name):
         """
-        Writes the contact information from the address book to a text file.
+        Description:
+            Writes the contact information from the address book to a text file.
         Parameters:
             file_name (str): The name of the file to write the contacts to.
         Returns:
@@ -329,7 +331,8 @@ class AddressBook:
 
     def read_from_text_file(self, file_name):
         """
-        Reads contact information from a text file and adds them to the address book.
+        Description:
+            Reads contact information from a text file and adds them to the address book.
         Parameters:
             file_name (str): The name of the file to read the contacts from.
         Returns:
@@ -350,7 +353,8 @@ class AddressBook:
 
     def read_from_csv_file(self, file_name):
         """
-        Reads contact information from a CSV file and adds them to the address book.
+        Description:
+            Reads contact information from a CSV file and adds them to the address book.
         Parameters:
             file_name (str): The name of the CSV file to read the contacts from.
         Returns:
@@ -398,7 +402,8 @@ class AddressBook:
 
     def write_to_csv_file(self, file_name, address_book_name):
         """
-        Writes the contact information from the address book to a CSV file, along with the Address Book name.
+        Description:
+            Writes the contact information from the address book to a CSV file
         Parameters:
             file_name (str): The name of the file to write the contacts to.
             address_book_name (str): The name of the address book to include in the file.
@@ -419,6 +424,69 @@ class AddressBook:
             self.logger.info(f"Contacts from '{address_book_name}' successfully written to {file_name}")
         except Exception as e:
             self.logger.error(f"Error writing to file: {str(e)}")
+
+
+    def write_to_json_file(self, file_name):
+        """
+        Description:
+            Writes the contact information from the address book to a JSON file.
+        Parameters:
+            file_name (str): The name of the file to write the contacts to.
+        Returns:
+            None
+        """
+        try:
+            with open(file_name, 'w') as file:
+                # Converting contacts to a list of dictionaries
+                contacts_data = [
+                    {
+                        'first_name': contact.first_name,
+                        'last_name': contact.last_name,
+                        'address': contact.address,
+                        'city': contact.city,
+                        'state': contact.state,
+                        'zip_code': contact.zip_code,
+                        'phone_number': contact.phone_number,
+                        'email': contact.email
+                    }
+                    for contact in self.contacts
+                ]
+                json.dump(contacts_data, file, indent=4)
+            self.logger.info(f"Contacts successfully written to {file_name}")
+        except Exception as e:
+            self.logger.error(f"Error writing to file: {str(e)}")
+
+
+    def read_from_json_file(self, file_name):
+        """
+        Description:
+            Reads contact information from a JSON file and adds them to the address book.
+        Parameters:
+            file_name (str): The name of the JSON file to read the contacts from.
+        Returns:
+            None
+        """
+        try:
+            with open(file_name, 'r') as file:
+                contacts_data = json.load(file)
+                
+                # Add each contact to the address book
+                for contact_data in contacts_data:
+                    # Create Contact object and add to contacts list
+                    new_contact = Contact(
+                        first_name=contact_data['first_name'],
+                        last_name=contact_data['last_name'],
+                        address=contact_data['address'],
+                        city=contact_data['city'],
+                        state=contact_data['state'],
+                        zip_code=contact_data['zip_code'],
+                        phone_number=contact_data['phone_number'],
+                        email=contact_data['email']
+                    )
+                    self.add_contact(new_contact)
+            self.logger.info(f"Contacts successfully read from {file_name}")
+        except Exception as e:
+            self.logger.error(f"Error reading from file: {str(e)}")
 
 
 class ManageAddressBook:
@@ -659,7 +727,9 @@ def main():
                                     print("2. Write to Text File")
                                     print("3. Read from CSV File")
                                     print("4. Write to CSV File")
-                                    print("5. Go Back")
+                                    print("5. Read from JSON File")
+                                    print("6. Write to JSON File")
+                                    print("7. Go Back")
                                     
                                     file_choice = input("Choose a file operation: ")
                                     
@@ -675,16 +745,26 @@ def main():
                                             address_book.write_to_text_file(file_name)
 
                                         case "3":
-                                            # file_name = input("Enter the text file name to write to (e.g., contacts.csv): ")
+                                            # file_name = input("Enter the csv file name to write to (e.g., contacts.csv): ")
                                             file_name = r"address_book_csv.csv"
                                             address_book.read_from_csv_file(file_name)
                                         
                                         case "4":
-                                            file_name = input("Enter the text file name to write to (e.g., contacts.csv): ")
+                                            file_name = input("Enter the csv file name to write to (e.g., contacts.csv): ")
                                             address_book.write_to_csv_file(file_name, address_book_name)
 
                                         case "5":
-                                            break  # Go back to the main menu
+                                            # file_name = input("Enter the json file name to write to (e.g., contacts.json): ")
+                                            file_name = r"address_book_json.json"
+                                            address_book.read_from_json_file(file_name)
+                                        
+                                        case "6":
+                                            file_name = input("Enter the json file name to write to (e.g., contacts.json): ")
+                                            address_book.write_to_json_file(file_name)
+
+                                        case "7":
+                                            # Go back to the contacts menu
+                                            break  
 
                                         case _:
                                             logger.info("Invalid option! Please choose again.")
