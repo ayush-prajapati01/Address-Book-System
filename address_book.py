@@ -64,6 +64,7 @@ class AddressBook:
         self.name = name
         self.contacts = []
         self.logger = logger
+        self.city_person_dict = {}
 
 
     def add_contact(self, contact):
@@ -83,6 +84,11 @@ class AddressBook:
 
         self.contacts.append(contact)
         self.logger.info("Contact added successfully!")
+
+        # Updating the city-person dictionary
+        if contact.city not in self.city_person_dict:
+            self.city_person_dict[contact.city] = []
+        self.city_person_dict[contact.city].append(contact)
 
 
     def display_contacts(self):
@@ -215,6 +221,25 @@ class AddressBook:
                 person_in_state.append(contact.first_name + " " + contact.last_name)
         
         return person_in_state
+
+
+    def display_persons_by_city(self):
+        """
+        Description:
+            Displays all the persons grouped by city.
+        Parameters:
+            None
+        Returns:
+            None
+        """
+        if not self.city_person_dict:
+            self.logger.info("No contacts found.")
+        else:
+            for city, persons in self.city_person_dict.items():
+                self.logger.info(f"\nCity: {city}")
+                for person in persons:
+                    self.logger.info(f"  - {person.first_name} {person.last_name}")
+            self.logger.info("\n" + "-" * 40)
 
 
 class ManageAddressBook:
@@ -385,7 +410,8 @@ def main():
                         print("5. Add Multiple Contacts")
                         print("6. Search via Name")
                         print("7. Search via State")
-                        print("8. Go Back to Main Menu")
+                        print("8. View by City")
+                        print("9. Go Back to Main Menu")
                         contact_choice = input("Choose an option: ")
 
                         match contact_choice:
@@ -429,6 +455,9 @@ def main():
                                     logger.info(person)
 
                             case "8":
+                                address_book.display_persons_by_city()
+
+                            case "9":
                                 logger.info("Switching to the Main menu.")
                                 break
 
