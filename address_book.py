@@ -309,6 +309,45 @@ class AddressBook:
             self.logger.info("\n" + "-" * 40)
 
 
+    def write_to_text_file(self, file_name):
+        """
+        Writes the contact information from the address book to a text file.
+        Parameters:
+            file_name (str): The name of the file to write the contacts to.
+        Returns:
+            None
+        """
+        try:
+            with open(file_name, 'w') as file:
+                for contact in self.contacts:
+                    file.write(f"{contact.first_name},{contact.last_name},{contact.address},"
+                               f"{contact.city},{contact.state},{contact.zip_code},{contact.phone_number},{contact.email}\n")
+            self.logger.info(f"Contacts successfully written to {file_name}")
+        except Exception as e:
+            self.logger.error(f"Error writing to file: {str(e)}")
+
+
+    def read_from_text_file(self, file_name):
+        """
+        Reads contact information from a text file and adds them to the address book.
+        Parameters:
+            file_name (str): The name of the file to read the contacts from.
+        Returns:
+            None
+        """
+        try:
+            with open(file_name, 'r') as file:
+                for line in file:
+                    first_name, last_name, address, city, state, zip_code, phone_number, email = line.strip().split(',')
+                    contact = Contact(first_name, last_name, address, city, state, zip_code, phone_number, email)
+                    self.add_contact(contact)
+            self.logger.info(f"Contacts successfully loaded from {file_name}")
+        except FileNotFoundError:
+            self.logger.error(f"File {file_name} not found.")
+        except Exception as e:
+            self.logger.error(f"Error reading from file: {str(e)}")
+
+
 class ManageAddressBook:
     def __init__(self, logger):
         """
@@ -481,7 +520,8 @@ def main():
                         print("9. Count by State")
                         print("10. Sort by first name")
                         print("11. Sort by Criteria")
-                        print("12. Go Back to Main Menu")
+                        print('12. File Operations')
+                        print("13. Go Back to Main Menu")
                         contact_choice = input("Choose an option: ")
 
                         match contact_choice:
@@ -538,8 +578,34 @@ def main():
                                 criteria = input("Sort contacts by city, state, or zip: ").lower()
                                 address_book.sort_contacts(criteria)
                                 address_book.display_contacts()
-   
+                            
                             case "12":
+                                while True:
+                                    print("\nFile Operations:")
+                                    print("1. Read from Text File")
+                                    print("2. Write to Text File")
+                                    print("3. Go Back")
+                                    
+                                    file_choice = input("Choose a file operation: ")
+                                    
+                                    match file_choice:
+                                        case "1":
+                                            # file_name = input("Enter the text file name to read from (e.g., contacts.txt): ")
+                                            file_name = r"address_book_text.txt"
+                                            address_book.read_from_text_file(file_name)
+
+                                        case "2":
+                                            file_name = input("Enter the text file name to write to (e.g., contacts.txt): ")
+                                            # file_name = r"address_book_text.txt"
+                                            address_book.write_to_text_file(file_name)
+
+                                        case "3":
+                                            break  # Go back to the main menu
+
+                                        case _:
+                                            logger.info("Invalid option! Please choose again.")
+   
+                            case "13":
                                 logger.info("Switching to the Main menu.")
                                 break
 
