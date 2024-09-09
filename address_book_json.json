@@ -1,0 +1,22 @@
+[
+    {
+        "first_name": "Ayush",
+        "last_name": "Prajapati",
+        "address": "asb",
+        "city": "asd",
+        "state": "aasds",
+        "zip_code": "111111",
+        "phone_number": "0000000000",
+        "email": "abc@gmail.com"
+    },
+    {
+        "first_name": "Devn",
+        "last_name": "Prajapati",
+        "address": "asb",
+        "city": "asd",
+        "state": "aasds",
+        "zip_code": "111111",
+        "phone_number": "000000000",
+        "email": "abc@gmail.com"
+    }
+]
