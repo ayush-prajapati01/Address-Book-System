@@ -11,6 +11,7 @@
 
 from logging_helper import create_logger
 from input_validator import is_valid, is_valid_email, is_valid_phone_number, is_valid_zip
+import csv
 
 
 class Contact:
@@ -211,10 +212,9 @@ class AddressBook:
                         contact.email = get_valid_input(self.logger, "Enter new email: ", is_valid_email)
                     elif choice == "9":
                         self.logger.info("Update process completed.")
-                        return
+                        break
                     else:
                         self.logger.info("Invalid choice, please try again.")
-
             else:
                 self.logger.info("No contacts found.")
 
@@ -346,6 +346,79 @@ class AddressBook:
             self.logger.error(f"File {file_name} not found.")
         except Exception as e:
             self.logger.error(f"Error reading from file: {str(e)}")
+
+
+    def read_from_csv_file(self, file_name):
+        """
+        Reads contact information from a CSV file and adds them to the address book.
+        Parameters:
+            file_name (str): The name of the CSV file to read the contacts from.
+        Returns:
+            None
+        """
+        try:
+            with open(file_name, 'r', newline='') as file:
+                reader = csv.reader(file)
+                next(reader)  # Skip the header row
+                
+                # Read contact details and add them to the address book
+                for row in reader:
+                    # Assuming the CSV columns are: ['Address Book Name', 'First Name', 'Last Name', 'Address', 'City', 'State', 'Zip Code', 'Phone Number', 'Email']
+                    if len(row) != 9:  # Ensure we have the expected number of columns
+                        self.logger.error(f"Invalid row format: {row}")
+                        continue
+                    
+                    # Read from the second column onwards
+                    first_name = row[1]
+                    last_name = row[2]
+                    address = row[3]
+                    city = row[4]
+                    state = row[5]
+                    zip_code = row[6]
+                    phone_number = row[7]
+                    email = row[8]
+                    
+                    # Create Contact object and add to contacts list
+                    new_contact = Contact(
+                        first_name=first_name,
+                        last_name=last_name,
+                        address=address,
+                        city=city,
+                        state=state,
+                        zip_code=zip_code,
+                        phone_number=phone_number,
+                        email=email
+                    )
+                    
+                    self.add_contact(new_contact)
+                self.logger.info(f"Contacts successfully read from {file_name}")
+        except Exception as e:
+            self.logger.error(f"Error reading from file: {str(e)}")
+
+
+    def write_to_csv_file(self, file_name, address_book_name):
+        """
+        Writes the contact information from the address book to a CSV file, along with the Address Book name.
+        Parameters:
+            file_name (str): The name of the file to write the contacts to.
+            address_book_name (str): The name of the address book to include in the file.
+        Returns:
+            None
+        """
+        try:
+            with open(file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
+                
+                # Write the Address Book name as a header
+                writer.writerow(['Address Book','First Name', 'Last Name', 'Address', 'City', 'State', 'Zip Code', 'Phone Number', 'Email'])
+                
+                # Write contact details
+                for contact in self.contacts:
+                    writer.writerow([address_book_name, contact.first_name, contact.last_name, contact.address, contact.city, contact.state, contact.zip_code, contact.phone_number, contact.email])
+                    
+            self.logger.info(f"Contacts from '{address_book_name}' successfully written to {file_name}")
+        except Exception as e:
+            self.logger.error(f"Error writing to file: {str(e)}")
 
 
 class ManageAddressBook:
@@ -584,7 +657,9 @@ def main():
                                     print("\nFile Operations:")
                                     print("1. Read from Text File")
                                     print("2. Write to Text File")
-                                    print("3. Go Back")
+                                    print("3. Read from CSV File")
+                                    print("4. Write to CSV File")
+                                    print("5. Go Back")
                                     
                                     file_choice = input("Choose a file operation: ")
                                     
@@ -600,6 +675,15 @@ def main():
                                             address_book.write_to_text_file(file_name)
 
                                         case "3":
+                                            # file_name = input("Enter the text file name to write to (e.g., contacts.csv): ")
+                                            file_name = r"address_book_csv.csv"
+                                            address_book.read_from_csv_file(file_name)
+                                        
+                                        case "4":
+                                            file_name = input("Enter the text file name to write to (e.g., contacts.csv): ")
+                                            address_book.write_to_csv_file(file_name, address_book_name)
+
+                                        case "5":
                                             break  # Go back to the main menu
 
                                         case _:
