@@ -97,6 +97,23 @@ class AddressBook:
         self.state_person_count[contact.state] += 1
 
 
+    def sort_contacts_by_first_name(self):
+        """
+        Description:
+            Sorts the contacts alphabetically by the person's first name.
+        Parameters:
+            None
+        Returns:
+            None
+        """
+        if not self.contacts:
+            self.logger.info("No contacts to sort.")
+        else:
+            # Sort contacts by the first name
+            self.contacts.sort(key=lambda contact: contact.first_name)
+            self.logger.info("Contacts sorted alphabetically by first name.")
+
+
     def display_contacts(self):
         """
         Description:
@@ -436,7 +453,8 @@ def main():
                         print("7. Search via State")
                         print("8. View by City")
                         print("9. Count by State")
-                        print("10. Go Back to Main Menu")
+                        print("10. Sort by first name")
+                        print("11. Go Back to Main Menu")
                         contact_choice = input("Choose an option: ")
 
                         match contact_choice:
@@ -486,6 +504,10 @@ def main():
                                 address_book.display_contact_count_by_state()
 
                             case "10":
+                                address_book.sort_contacts_by_first_name()
+                                address_book.display_contacts()
+
+                            case "11":
                                 logger.info("Switching to the Main menu.")
                                 break
 
