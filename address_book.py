@@ -114,6 +114,32 @@ class AddressBook:
             self.logger.info("Contacts sorted alphabetically by first name.")
 
 
+    def sort_contacts(self, criteria):
+        """
+        Description:
+            Sorts contacts by the given criteria: 'city', 'state', or 'zip'.
+        Parameters:
+            criteria (str): The field by which to sort the contacts (city, state, or zip).
+        Returns:
+            None
+        """
+        if not self.contacts:
+            self.logger.info("No contacts to sort.")
+            return
+        
+        if criteria == 'city':
+            self.contacts.sort(key=lambda contact: contact.city)
+        elif criteria == 'state':
+            self.contacts.sort(key=lambda contact: contact.state)
+        elif criteria == 'zip':
+            self.contacts.sort(key=lambda contact: contact.zip_code)
+        else:
+            self.logger.info("Invalid sorting criteria! Please choose 'city', 'state', or 'zip'.")
+            return
+        
+        self.logger.info(f"Contacts sorted by {criteria}.")
+
+
     def display_contacts(self):
         """
         Description:
@@ -454,7 +480,8 @@ def main():
                         print("8. View by City")
                         print("9. Count by State")
                         print("10. Sort by first name")
-                        print("11. Go Back to Main Menu")
+                        print("11. Sort by Criteria")
+                        print("12. Go Back to Main Menu")
                         contact_choice = input("Choose an option: ")
 
                         match contact_choice:
@@ -506,8 +533,13 @@ def main():
                             case "10":
                                 address_book.sort_contacts_by_first_name()
                                 address_book.display_contacts()
-
+                            
                             case "11":
+                                criteria = input("Sort contacts by city, state, or zip: ").lower()
+                                address_book.sort_contacts(criteria)
+                                address_book.display_contacts()
+   
+                            case "12":
                                 logger.info("Switching to the Main menu.")
                                 break
 
