@@ -65,6 +65,7 @@ class AddressBook:
         self.contacts = []
         self.logger = logger
         self.city_person_dict = {}
+        self.state_person_count = {} 
 
 
     def add_contact(self, contact):
@@ -89,6 +90,11 @@ class AddressBook:
         if contact.city not in self.city_person_dict:
             self.city_person_dict[contact.city] = []
         self.city_person_dict[contact.city].append(contact)
+
+         # Updating the state-person count dictionary
+        if contact.state not in self.state_person_count:
+            self.state_person_count[contact.state] = 0
+        self.state_person_count[contact.state] += 1
 
 
     def display_contacts(self):
@@ -239,6 +245,24 @@ class AddressBook:
                 self.logger.info(f"\nCity: {city}")
                 for person in persons:
                     self.logger.info(f"  - {person.first_name} {person.last_name}")
+            self.logger.info("\n" + "-" * 40)
+
+
+    def display_contact_count_by_state(self):
+        """
+        Description:
+            Displays the number of contacts grouped by state.
+        Parameters:
+            None
+        Returns:
+            None
+        """
+        if not self.state_person_count:
+            self.logger.info("No contacts found.")
+        else:
+            self.logger.info("\nContact Count by State:")
+            for state, count in self.state_person_count.items():
+                self.logger.info(f"State: {state}, Count: {count}")
             self.logger.info("\n" + "-" * 40)
 
 
@@ -411,7 +435,8 @@ def main():
                         print("6. Search via Name")
                         print("7. Search via State")
                         print("8. View by City")
-                        print("9. Go Back to Main Menu")
+                        print("9. Count by State")
+                        print("10. Go Back to Main Menu")
                         contact_choice = input("Choose an option: ")
 
                         match contact_choice:
@@ -458,6 +483,9 @@ def main():
                                 address_book.display_persons_by_city()
 
                             case "9":
+                                address_book.display_contact_count_by_state()
+
+                            case "10":
                                 logger.info("Switching to the Main menu.")
                                 break
 
